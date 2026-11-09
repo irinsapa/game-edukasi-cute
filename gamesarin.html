@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>Game Edukasi Cute</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(135deg, #89CFF0, #FFC0CB);
+    color: #333;
+    text-align: center;
+    margin: 0; padding: 0;
+  }
+  h1 {
+    color: #fff;
+    margin-top: 20px;
+    text-shadow: 2px 2px 5px #000;
+  }
+  button {
+    background-color: #ff69b4;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 2px 2px 5px #888;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #ff85c1;
+  }
+  #character-select img {
+    width: 100px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    margin: 0 10px;
+    transition: border-color 0.3s ease;
+  }
+  #character-select img.selected {
+    border-color: #ff69b4;
+  }
+  #game-area {
+    margin-top: 30px;
+  }
+  #question {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .answer-btn {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    background-color: #4a90e2;
+  }
+  #timer {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff1493;
+    margin-top: 10px;
+  }
+  #level-select button {
+    background-color: #4a90e2;
+  }
+  #mapel-select button {
+    background-color: #ff69b4;
+  }
+</style>
+</head>
+<body>
+
+<h1>Game Edukasi Cute</h1>
+
+<div id="character-select">
+  <h2>Pilih Karakter</h2>
+  <img src="https://i.postimg.cc/qRbqqQfq/character1.png" alt="Karakter 1" data-char="1">
+  <img src="https://i.postimg.cc/DZ1Zx1Gc/character2.png" alt="Karakter 2" data-char="2">
+  <img src="https://i.postimg.cc/fWpgCpRL/character3.png" alt="Karakter 3" data-char="3">
+</div>
+
+<div id="mapel-select">
+  <h2>Pilih Mata Pelajaran</h2>
+  <button data-mapel="bindo">Bahasa Indonesia</button>
+  <button data-mapel="bingg">Bahasa Inggris</button>
+  <button data-mapel="mtk">Matematika</button>
+  <button data-mapel="ips">IPS</button>
+  <button data-mapel="ipa">IPA</button>
+</div>
+
+<div id="level-select" style="display:none;">
+  <h2>Pilih Level</h2>
+  <button data-level="1">Level 1</button>
+  <button data-level="2">Level 2</button>
+  <button data-level="3">Level 3</button>
+</div>
+
+<div id="game-area" style="display:none;">
+  <div id="level-info" style="font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #fff;"></div>
+  <div id="character-display"></div>
+  <div id="question"></div>
+  <div id="answers"></div>
+  <div id="timer">Waktu: 15 detik</div>
+</div>
+
+<script>
+// Data soal lengkap 10 soal per level untuk Bahasa Indonesia & Bahasa Inggris
+const questions = {
+  bindo: {
+    1: [
+      { question: "Apa sinonim kata 'cantik'?", answers: ["Buruk", "Indah", "Jelek", "Hitam"], correct: 1 },
+      { question: "Hewan yang suka memakan wortel adalah?", answers: ["Kucing", "Kelinci", "Anjing", "Sapi"], correct: 1 },
+      { question: "Warna bendera Indonesia adalah?", answers: ["Merah Putih", "Biru Kuning", "Merah Biru", "Putih Hijau"], correct: 0 },
+      { question: "Bunga nasional Indonesia adalah bunga?", answers: ["Melati", "Mawar", "Anggrek", "Sepatu"], correct: 0 },
+      { question: "Alat untuk menulis di buku adalah?", answers: ["Sendok", "Pensil", "Gunting", "Ember"], correct: 1 },
+      { question: "Matahari terbit pada waktu?", answers: ["Malam", "Sore", "Pagi", "Tengah malam"], correct: 2 },
+      { question: "Berapa jumlah hari dalam satu minggu?", answers: ["5 hari", "6 hari", "7 hari", "8 hari"], correct: 2 },
+      { question: "Bagian tubuh yang digunakan untuk mendengar adalah?", answers: ["Mata", "Telinga", "Hidung", "Tangan"], correct: 1 },
+      { question: "Air terjun mengalir dari...", answers: ["Bawah ke atas", "Atas ke bawah", "Samping ke samping", "Diam saja"], correct: 1 },
+      { question: "Binatang yang hidup di air disebut?", answers: ["Darat", "Amfibi", "Ikan / Air", "Udara"], correct: 2 }
+    ],
+    2: [
+      { question: "Kalimat yang benar adalah?", answers: ["Saya pergi ke sekolah.", "Pergi saya sekolah.", "Sekolah ke saya pergi.", "Saya sekolah ke pergi."], correct: 0 },
+      { question: "Antonim atau lawan kata dari 'panas' adalah?", answers: ["Hangat", "Dingin", "Sejuk", "Terik"], correct: 1 },
+      { question: "Pekerjaan orang yang mengajar di sekolah disebut?", answers: ["Dokter", "Polisi", "Guru", "Petani"], correct: 2 },
+      { question: "Hewan yang menghasilkan madu adalah?", answers: ["Lalat", "Lebah", "Nyamuk", "Kupu-kupu"], correct: 1 },
+      { question: "Ibukota negara Indonesia adalah?", answers: ["Bandung", "Surabaya", "Jakarta", "Medan"], correct: 2 },
+      { question: "Alat transportasi yang berjalan di atas rel adalah?", answers: ["Mobil", "Pesawat", "Kereta api", "Kapal"], correct: 2 },
+      { question: "Benda langit yang bersinar pada malam hari selain bintang adalah?", answers: ["Matahari", "Bulan", "Pelangi", "Awan"], correct: 1 },
+      { question: "Buah yang rasanya asam manis berwarna kuning berbentuk lonjong adalah?", answers: ["Semangka", "Jeruk", "Pisang", "Mangga"], correct: 1 },
+      { question: "Kata tanya untuk menanyakan tempat adalah?", answers: ["Apa", "Siapa", "Di mana", "Mengapa"], correct: 2 },
+      { question: "Susu berasal dari hewan...", answers: ["Ayam", "Sapi", "Bebek", "Ikan"], correct: 1 }
+    ],
+    3: [
+      { question: "Apa arti kata 'cerdas'?", answers: ["Bodoh", "Pintar", "Lambat", "Patah"], correct: 1 },
+      { question: "Karangan yang bersifat fiksi/khayalan disebut cerita...", answers: ["Sejarah", "Dongeng", "Biografi", "Kamus"], correct: 1 },
+      { question: "Penulisan huruf kapital yang benar untuk nama orang adalah?", answers: ["budi", "BUDI", "Budi", "buDi"], correct: 2 },
+      { question: "Sinonim dari kata 'rajin' adalah?", answers: ["Malas", "Giat", "Lambat", "Bodoh"], correct: 1 },
+      { question: "Dongeng yang menceritakan tentang hewan disebut?", answers: ["Legenda", "Mite", "Fabel", "Sage"], correct: 2 },
+      { question: "Orang yang memimpin sebuah desa disebut?", answers: ["Gubernur", "Presiden", "Kepala desa", "Camat"], correct: 2 },
+      { question: "Alat musik tradisional angklung berasal dari daerah...", answers: ["Bali", "Jawa Barat", "Sumatera Barat", "Papua"], correct: 1 },
+      { question: "Lawan kata dari 'panjang' adalah?", answers: ["Tinggi", "Pendek", "Luas", "Kecil"], correct: 1 },
+      { question: "Kalimat perintah biasanya diakhiri dengan tanda...", answers: ["Titik (.)", "Tanya (?)", "Seru (!)", "Koma (,)"], correct: 2 },
+      { question: "Pulau terbesar di Indonesia adalah...", answers: ["Bali", "Java", "Kalimantan", "Madura"], correct: 2 }
+    ]
+  },
+  bingg: {
+    1: [
+      { question: "What is the English for 'Rumah'?", answers: ["House", "Car", "Dog", "Tree"], correct: 0 },
+      { question: "What is the English for 'Kucing'?", answers: ["Dog", "Cat", "Bird", "Fish"], correct: 1 },
+      { question: "What color is a banana?", answers: ["Red", "Yellow", "Blue", "Black"], correct: 1 },
+      { question: "How do you say 'Terima kasih' in English?", answers: ["Hello", "Good morning", "Thank you", "Goodbye"], correct: 2 },
+      { question: "What is the English for 'Buku'?", answers: ["Pen", "Book", "Table", "Bag"], correct: 1 },
+      { question: "What is the number after Two (2)?", answers: ["One", "Three", "Four", "Five"], correct: 1 },
+      { question: "What is the English for 'Apel'?", answers: ["Apple", "Orange", "Grape", "Melon"], correct: 0 },
+      { question: "What is the English for 'Air'?", answers: ["Fire", "Water", "Wind", "Earth"], correct: 1 },
+      { question: "What is the English for 'Susu'?", answers: ["Tea", "Coffee", "Milk", "Juice"], correct: 2 },
+      { question: "What is the English for 'Matahari'?", answers: ["Moon", "Sun", "Star", "Cloud"], correct: 1 }
+    ],
+    2: [
+      { question: "Choose the correct plural form of 'cat'.", answers: ["cats", "cat", "cates", "catz"], correct: 0 },
+      { question: "What is the opposite of 'big'?", answers: ["Small", "Tall", "Fat", "Long"], correct: 0 },
+      { question: "Translate: 'I am a student'.", answers: ["Saya seorang guru", "Saya seorang murid", "Saya seorang dokter", "Saya seorang polisi"], correct: 1 },
+      { question: "What is the English for 'Sekolah'?", answers: ["Hospital", "School", "Market", "Library"], correct: 1 },
+      { question: "What day comes after Monday?", answers: ["Sunday", "Tuesday", "Wednesday", "Friday"], correct: 1 },
+      { question: "What is the English for 'Meja'?", answers: ["Chair", "Table", "Door", "Window"], correct: 1 },
+      { question: "Translate: 'Good morning' means...", answers: ["Selamat malam", "Selamat sore", "Selamat pagi", "Selamat siang"], correct: 2 },
+      { question: "What animal says 'Moo'?", answers: ["Cat", "Cow", "Duck", "Sheep"], correct: 1 },
+      { question: "What is the color of the sky?", answers: ["Green", "Blue", "Red", "Yellow"], correct: 1 },
+      { question: "What is the English for 'Tas'?", answers: ["Pencil", "Book", "Bag", "Eraser"], correct: 2 }
+    ],
+    3: [
+      { question: "What is the past tense of 'go'?", answers: ["Gone", "Went", "Going", "Goes"], correct: 1 },
+      { question: "Choose the correct sentence:", answers: ["She is read a book", "She are reading a book", "She is reading a book", "She reading a book"], correct: 2 },
+      { question: "What is the opposite of 'happy'?", answers: ["Sad", "Angry", "Fast", "Cold"], correct: 0 },
+      { question: "What is the capital of England?", answers: ["Paris", "London", "New York", "Sydney"], correct: 1 },
+      { question: "Which one is a fruit?", answers: ["Carrot", "Potato", "Strawberry", "Broccoli"], correct: 2 },
+      { question: "What is the English for 'Keluarga'?", answers: ["Friend", "Family", "Teacher", "Neighbor"], correct: 1 },
+      { question: "Complete the sentence: 'She ___ to school every day.'", answers: ["go", "goes", "gone", "going"], correct: 1 },
+      { question: "What is the opposite of 'hot'?", answers: ["Cold", "Warm", "Cool", "Dry"], correct: 0 },
+      { question: "How do you spell 'Sepuluh' in English?", answers: ["Nine", "Ten", "Eleven", "Twelve"], correct: 1 },
+      { question: "What is the English for 'Perpustakaan'?", answers: ["Laboratory", "Canteen", "Library", "Office"], correct: 2 }
+    ]
+  }
+};
+
+let selectedChar = null;
+let selectedMapel = null;
+let selectedLevel = 1; // Mulai dari level 1 secara default
+let currentQuestionIndex = 0;
+let timerId;
+let timeLeft = 15;
+
+// Pilih karakter
+const characters = document.querySelectorAll('#character-select img');
+characters.forEach(char => {
+  char.addEventListener('click', () => {
+    characters.forEach(c => c.classList.remove('selected'));
+    char.classList.add('selected');
+    selectedChar = char.dataset.char;
+    document.getElementById('character-display').innerHTML = `<img src="${char.src}" alt="Karakter Anda" width="120" style="margin:10px;">`;
+  });
+});
+
+// Pilih mapel
+const mapelButtons = document.querySelectorAll('#mapel-select button');
+mapelButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedMapel = btn.dataset.mapel;
+    document.getElementById('mapel-select').style.display = 'none';
+    document.getElementById('level-select').style.display = 'block';
+  });
+});
+
+// Pilih level awal
+const levelButtons = document.querySelectorAll('#level-select button');
+levelButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedLevel = parseInt(btn.dataset.level);
+    document.getElementById('level-select').style.display = 'none';
+    document.getElementById('character-select').style.display = 'none';
+    startGame();
+  });
+});
+
+function startGame() {
+  currentQuestionIndex = 0;
+  document.getElementById('game-area').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  clearInterval(timerId);
+  timeLeft = 15;
+  document.getElementById('timer').textContent = `Waktu: ${timeLeft} detik`;
+  
+  // Update info level di layar game
+  document.getElementById('level-info').textContent = `Level ${selectedLevel} (Soal ${currentQuestionIndex + 1} dari 10)`;
+
+  let mapelData = questions[selectedMapel];
+  // Jika mapel belum ada datanya, beri peringatan sementara
+  if (!mapelData) {
+    alert("Maaf, soal untuk mata pelajaran ini belum tersedia. Coba Bahasa Indonesia atau Bahasa Inggris ya!");
+    resetGame();
+    return;
+  }
+
+  let qList = mapelData[selectedLevel];
+  
+  // Jika soal di level ini habis (sudah lewat 10 soal)
+  if (!qList || currentQuestionIndex >= qList.length) {
+    if (selectedLevel < 3) {
+      alert(`Horee! Kamu berhasil menyelesaikan Level ${selectedLevel}! Lanjut ke Level berikutnya ya! 🎉`);
+      selectedLevel++; // Naik ke level berikutnya otomatis
+      currentQuestionIndex = 0;
+      showQuestion();
+      return;
+    } else {
+      alert("Luar biasa! Kamu sudah menamatkan semua level di mata pelajaran ini! 🏆✨");
+      resetGame();
+      return;
+    }
+  }
+
+  let q = qList[currentQuestionIndex];
+  document.getElementById('question').textContent = q.question;
+
+  const answersDiv = document.getElementById('answers');
+  answersDiv.innerHTML = '';
+  q.answers.forEach((ans, i) => {
+    let btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = ans;
+    btn.onclick = () => checkAnswer(i);
+    answersDiv.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function checkAnswer(selectedIndex) {
+  clearInterval(timerId);
+  let q = questions[selectedMapel][selectedLevel][currentQuestionIndex];
+  if (selectedIndex === q.correct) {
+    alert("Benar! Hebat sekali! :)");
+  } else {
+    alert("Salah! Jawaban yang benar: " + q.answers[q.correct]);
+  }
+  currentQuestionIndex++;
+  showQuestion();
+}
+
+function startTimer() {
+  timerId = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = `Waktu: ${timeLeft} detik`;
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      alert("Waktu habis!");
+      currentQuestionIndex++;
+      showQuestion();
+    }
+  }, 1000);
+}
+
+function resetGame() {
+  selectedChar = null;
+  selectedMapel = null;
+  selectedLevel = 1;
+  currentQuestionIndex = 0;
+  document.getElementById('character-select').style.display = 'block';
+  document.getElementById('mapel-select').style.display = 'block';
+  document.getElementById('level-select').style.display = 'none';
+  document.getElementById('game-area').style.display = 'none';
+  characters.forEach(c => c.classList.remove('selected'));
+  document.getElementById('character-display').innerHTML = '';
+}
+</script>
+
+</body>
+</html>
